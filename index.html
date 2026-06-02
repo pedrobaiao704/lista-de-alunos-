@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lista de Alunos</title>
+
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --primary: #1f4e79;
+      --primary-dark: #163a59;
+      --text: #1f2933;
+      --muted: #6b7280;
+      --border: #d9dee7;
+      --success-bg: #e7f6ec;
+      --success-text: #17663a;
+      --error-bg: #fdeaea;
+      --error-text: #9f1d1d;
+      --row-alt: #f8fafc;
+      --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 760px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 28px 32px;
+    }
+
+    .header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    .header p {
+      margin: 0;
+      opacity: 0.92;
+      font-size: 15px;
+    }
+
+    .content {
+      padding: 28px 32px 32px;
+    }
+
+    .form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .input-group {
+      min-width: 0;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      height: 46px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 16px;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(31, 78, 121, 0.15);
+    }
+
+    button {
+      height: 46px;
+      align-self: end;
+      border: none;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      padding: 0 22px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .status {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      font-size: 14px;
+    }
+
+    .status.success {
+      display: block;
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    .status.error {
+      display: block;
+      background: var(--error-bg);
+      color: var(--error-text);
+    }
+
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .list-header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .counter {
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .student-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .student-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 16px;
+      font-size: 15px;
+      align-items: center;
+      background: white;
+    }
+
+    .student-list li:nth-child(even) {
+      background: var(--row-alt);
+    }
+
+    .student-name {
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .student-date {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .empty {
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      color: var(--muted);
+      text-align: center;
+      background: #fbfcfd;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 18px 10px;
+      }
+
+      .header {
+        padding: 22px 20px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .content {
+        padding: 22px 20px 26px;
+      }
+
+      .form {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .list-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .student-list li {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .student-date {
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <section class="card">
+      <header class="header">
+        <h1>Lista de Alunos</h1>
+        <p>Cadastro simples usando GitHub Pages, Google Planilhas e Google Apps Script.</p>
+      </header>
+
+      <section class="content">
+        <form id="studentForm" class="form">
+          <div class="input-group">
+            <label for="studentName">Nome do aluno</label>
+            <input
+              type="text"
+              id="studentName"
+              name="studentName"
+              placeholder="Digite o nome completo"
+              autocomplete="off"
+              required
+            />
+          </div>
+
+          <button type="submit" id="saveButton">Salvar</button>
+        </form>
+
+        <div id="status" class="status"></div>
+
+        <div class="list-header">
+          <h2>Alunos cadastrados</h2>
+          <span id="studentCount" class="counter">Carregando...</span>
+        </div>
+
+        <div id="listContainer">
+          <div class="empty">Carregando lista...</div>
+        </div>
+
+        <p class="footer-note">
+          A lista é carregada em ordem alfabética diretamente da planilha.
+        </p>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const CONFIG = {
+      APPS_SCRIPT_WEB_APP_URL: "COLE_AQUI_A_URL_DO_WEB_APP_DO_APPS_SCRIPT",
+      JSONP_TIMEOUT_MS: 12000
+    };
+
+    const studentForm = document.getElementById("studentForm");
+    const studentNameInput = document.getElementById("studentName");
+    const saveButton = document.getElementById("saveButton");
+    const statusBox = document.getElementById("status");
+    const listContainer = document.getElementById("listContainer");
+    const studentCount = document.getElementById("studentCount");
+
+    function setStatus(message, type) {
+      statusBox.textContent = message;
+      statusBox.className = "status";
+
+      if (type === "success") {
+        statusBox.classList.add("success");
+      }
+
+      if (type === "error") {
+        statusBox.classList.add("error");
+      }
+
+      if (!message) {
+        statusBox.style.display = "none";
+      }
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return "";
+      }
+
+      return date.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function jsonpRequest(params) {
+      return new Promise((resolve, reject) => {
+        if (!CONFIG.APPS_SCRIPT_WEB_APP_URL || CONFIG.APPS_SCRIPT_WEB_APP_URL.includes("COLE_AQUI")) {
+          reject(new Error("Configure a URL do Web App do Apps Script em CONFIG.APPS_SCRIPT_WEB_APP_URL."));
+          return;
+        }
+
+        const callbackName = "jsonpCallback_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+        const queryParams = new URLSearchParams({
+          ...params,
+          callback: callbackName
+        });
+
+        const script = document.createElement("script");
+        const separator = CONFIG.APPS_SCRIPT_WEB_APP_URL.includes("?") ? "&" : "?";
+        script.src = CONFIG.APPS_SCRIPT_WEB_APP_URL + separator + queryParams.toString();
+
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error("Tempo limite excedido ao acessar o Apps Script."));
+        }, CONFIG.JSONP_TIMEOUT_MS);
+
+        function cleanup() {
+          clearTimeout(timeout);
+
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
+
+          try {
+            delete window[callbackName];
+          } catch (error) {
+            window[callbackName] = undefined;
+          }
+        }
+
+        window[callbackName] = function(response) {
+          cleanup();
+
+          if (!response || response.ok !== true) {
+            reject(new Error(response && response.message ? response.message : "Erro desconhecido."));
+            return;
+          }
+
+          resolve(response);
+        };
+
+        script.onerror = function() {
+          cleanup();
+          reject(new Error("Não foi possível carregar a resposta do Apps Script."));
+        };
+
+        document.body.appendChild(script);
+      });
+    }
+
+    function renderStudents(students) {
+      const list = Array.isArray(students) ? students : [];
+
+      studentCount.textContent = list.length === 1
+        ? "1 aluno"
+        : list.length + " alunos";
+
+      if (list.length === 0) {
+        listContainer.innerHTML = '<div class="empty">Nenhum aluno cadastrado ainda.</div>';
+        return;
+      }
+
+      const html = `
+        <ul class="student-list">
+          ${list.map(student => `
+            <li>
+              <span class="student-name">${escapeHTML(student.name)}</span>
+              <span class="student-date">${escapeHTML(formatDate(student.createdAt))}</span>
+            </li>
+          `).join("")}
+        </ul>
+      `;
+
+      listContainer.innerHTML = html;
+    }
+
+    async function loadStudents() {
+      try {
+        studentCount.textContent = "Carregando...";
+        listContainer.innerHTML = '<div class="empty">Carregando lista...</div>';
+
+        const response = await jsonpRequest({
+          action: "list"
+        });
+
+        renderStudents(response.students);
+      } catch (error) {
+        studentCount.textContent = "Erro ao carregar";
+        listContainer.innerHTML = '<div class="empty">Não foi possível carregar a lista.</div>';
+        setStatus(error.message, "error");
+      }
+    }
+
+    async function addStudent(name) {
+      const cleanName = name.trim().replace(/\s+/g, " ");
+
+      if (!cleanName) {
+        setStatus("Digite o nome do aluno.", "error");
+        return;
+      }
+
+      saveButton.disabled = true;
+      saveButton.textContent = "Salvando...";
+      setStatus("", "");
+
+      try {
+        await jsonpRequest({
+          action: "add",
+          name: cleanName
+        });
+
+        studentNameInput.value = "";
+        setStatus("Aluno salvo com sucesso.", "success");
+        await loadStudents();
+        studentNameInput.focus();
+      } catch (error) {
+        setStatus(error.message, "error");
+      } finally {
+        saveButton.disabled = false;
+        saveButton.textContent = "Salvar";
+      }
+    }
+
+    studentForm.addEventListener("submit", function(event) {
+      event.preventDefault();
+      addStudent(studentNameInput.value);
+    });
+
+    loadStudents();
+  </script>
+</body>
+</html>
